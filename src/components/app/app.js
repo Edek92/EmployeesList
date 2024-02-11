@@ -14,14 +14,17 @@ class App extends Component {
         super(props)
         this.state = {
             data: [
-                { name: 'John D.', salary: 800, increase: true, rise: true, id: 1 },
+                { name: 'John D.', salary: 800, increase: false, rise: false, id: 1 },
                 { name: 'Alex M.', salary: 1400, increase: false, rise: false, id: 2 },
-                { name: 'James H.', salary: 1850, increase: false, rise: false, id: 3 }
+                { name: 'James H.', salary: 1850, increase: false, rise: false, id: 3 },
+                { name: 'Martin S.', salary: 950, increase: false, rise: false, id: 4 },
+                { name: 'Edvard A.', salary: 2100, increase: false, rise: false, id: 5 }
             ],
-            term: ''
+            term: '',
+            filter: 'all',
         }
 
-        this.maxId = 4;
+        this.maxId = 10000;
     }
 
     onToggleProp = (id, prop) => {
@@ -73,10 +76,25 @@ class App extends Component {
         this.setState({ term });
     }
 
-    render() {
-        const { data, term } = this.state;
+    dataFilter = (items, filter) => {
+        switch (filter) {
+            case 'rise':
+                return items.filter((item) => { return item.rise })
+            case 'salary':
+                return items.filter((item) => { return item.salary > 1000 })
+            default:
+                return items
+        }
+    }
 
-        const visibleData = this.searchEmp(data, term);
+    onFilterData = (item) => {
+        this.setState({ filter: item })
+    }
+
+    render() {
+        const { data, term, filter } = this.state;
+
+        const visibleData = this.dataFilter(this.searchEmp(data, term), filter);
 
         return (
             <div className="app">
@@ -86,7 +104,7 @@ class App extends Component {
 
                 <div className="search-panel">
                     <SearchPanel onUpdateSearch={this.onUpdateSearch} />
-                    <AppFilter />
+                    <AppFilter filter={filter} onFilterData={this.onFilterData} />
                 </div>
 
                 <EmployeesList
